@@ -68,7 +68,7 @@ function createtictactoe(player1, player2) {
     user2: player2,
     game: board
   });
-  sendEmail(player1,'<p>Welcome to TicTacToe, Make your first move! </p>' + board.writeBoard());
+  sendEmail(player1,'<p>Welcome to TicTacToe, Make your first move! </p>' + tictac.printBoard(board));
 }
 
 createtictactoe('kevinscottburns@gmail.com', 'zeidersjack@gmail.com')
@@ -87,7 +87,7 @@ createtictactoe('kevinscottburns@gmail.com', 'zeidersjack@gmail.com')
 
 
 function sendEmail(user, text){
-  console.log("Sending email...");
+  console.log("Sending email with text: " + text);
   sparky.transmissions.send({
   transmissionBody: {
     content: {
