@@ -11,20 +11,6 @@ var config = {
 };
 firebase.initializeApp(config);
 
-// myFirebaseRef.child("text").on("value", function(snapshot) {
-//   alert(snapshot.val());  // Alerts "San Francisco"
-// });
-
-// var commentsRef = firebase.database().ref('test');
-// commentsRef.on('child_added', function(data) {
-//   console.log("data added :)")
-//   sendEmail(snapshot.val());
-// });
-
-// firebase.database().ref('users/1').set({
-//     user: 'Hello'
-// });
-
 var getUserValue = firebase.database().ref('users/1/user');
 getUserValue.on('value', function(snapshot) {
   console.log(snapshot.val);
@@ -38,10 +24,19 @@ function writeUserData(player1, player2) {
 });
 }
 
+function addGameNum(){
+  var getUserValue = firebase.database().ref('gamenum');
+  getUserValue.on('value', function(snapshot) {
+  console.log(snapshot.val);
+  firebase.database.ref('gamenum').set(snapshot.val + 1);
+  });
+}
 
-writeUserData('Kevin', 'Bacon');
-var starCountRef = firebase.database().ref('users/user1');
-starCountRef.on('value', function(snapshot) {
+
+writeUserData('Kevin', 'Bacon'); //player1, player2
+
+var userData = firebase.database().ref('users/user1');
+userData.on('value', function(snapshot) {
   sendUserData(snapshot.val());
 });
 
@@ -51,7 +46,7 @@ function sendUserData(player1) {
 
 
 function sendEmail(text){
-  console.log("Sending email..");
+  console.log("Sending email...");
   sparky.transmissions.send({
   transmissionBody: {
     content: {
