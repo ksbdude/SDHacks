@@ -7,17 +7,7 @@ app.use(bodyParser.urlencoded({
 }));
 var chessGame = require("./chess/chess.js");
 var chessNLP = require("./chess/chessNLP.js");
-// var game = chessGame.handleInput("start game", "");
-app.post("/", function(req, res) {
-	var sent = req.body.sent;
-	// console.log(game);
-	data = chessGame.handleInput(sent, game);
-	game = data.game;
-	if (data.winner !== 0) {
-		res.send("GAME OVER ");
-	}
-	res.send(chessGame.writeBoard(game));
-})
+
 app.post("/moves", function(req, res) {
 	var game = chessGame.handleInput("start","");
   console.log(game)
