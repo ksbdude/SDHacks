@@ -15,7 +15,7 @@ module.exports = {
 				data.person = adresses[0];
 			for (var i = 0; i < words.length; i++) {
 				if (words[i].search('tic') + words[i].search('tac') + word[i].search('toe') > -3)
-					data.game = "tic tac toe";
+					data.game = "ticTacToe";
 				if (words[i] = 'chess') {
 					data.game = "chess";
 				}
@@ -31,5 +31,6 @@ module.exports = {
             return true;
         }
       }
+      return false
   }
 };
