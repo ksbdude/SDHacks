@@ -64,12 +64,12 @@ module.exports = {
 		};
 	},
 	printBoard: function(game) {
-		console.log(game.bd);
 		var boardString = game.bd.map(function(tile) {
 			if (tile == "X" || tile == "O")
 				return tile;
 			return "  ";
 		})
+<<<<<<< HEAD
 		console.log(boardString);
 		boardString[1] = "|" + boardString[1] + '|'
 		boardString[4] = "|" + boardString[4] + '|'
@@ -79,5 +79,26 @@ module.exports = {
 		boardString.unshift('<font face="courier">');
 		boardString.push("</font>");
 		return boardString.toString().replace(/,/g, '');
+=======
+		var board = '<table style="text-align:center;border-spacing:0pt;font-family:"Arial Unicode MS"; border-collapse:collapse; border-color: silver; border-style: solid; border-width: 0pt 0pt 0pt 0pt">';
+		for (var i = 0; i < 3; i++) {
+			var row = "<tr style='vertical-align:bottom;'>"
+			for (var j = 0; j < 3; j++) {
+				if (((j % 2) + (i % 2)) % 2 == 1) {
+					row = row + '<td style="width:40pt; height:40pt; border-collapse:collapse; border-color: silver; border-style: solid; border-width: 1pt 0pt 0pt 1pt"><span style="font-size:250%;">?' + (3 * i + j).toString() + '?</span></td>'
+				} else {
+					row = row + '<td style="background:silver;"><span style="font-size:250%;">?' + (3 * i + j).toString() + '?</span></td>'
+				}
+			}
+			row = row + "</tr>"
+			board = board + row;
+		}
+		for (var i = 0; i < 3; i++) {
+			for (var j = 0; j < 3; j++) {
+				board = board.replace("?" + (3 * (i) + (j)).toString() + "?", boardString[3 * i + j])
+			}
+		}
+		return board;
+>>>>>>> b70075f49fa0f5cc6bdffed4d87a2e5ff624f01c
 	}
 };
