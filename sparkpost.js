@@ -76,7 +76,7 @@ function sendEmail(user, text) {
 	var userRef = firebase.database().ref('users');
 	userRef.once('value', function(users) {
 		if (users.child(user.split('.')[0]).exists() === false)
-			users.push(user);
+			userRef.push(user);
 	});
 	console.log("Sending email with text: " + text);
 	sparky.transmissions.send({
@@ -100,16 +100,19 @@ function sendEmail(user, text) {
 	});
 }
 
-// var data = firebase.database().ref('raw-inbound');
-//   data.on('child_added', function(snapshot) {
-//     console.log(snapshot.val()[0].msys.relay_message.content.text)
-//     firebase.database().set(snapshot.val()[0], "");
-//
-//
-// //    firebase.database().ref('raw-inbound').orderByValuse();
-//
-//
-// });
+var data = firebase.database().ref('raw-inbound');
+  data.on('child_added', function(snapshot) {
+    snapshot.forEach(function(item){
+      console.log(item.val());
+    })
+    // console.log(snapshot.val()[0].msys.relay_message.content.text)
+    // firebase.database().set(snapshot.val()[0], "");
+
+
+//    firebase.database().ref('raw-inbound').orderByValuse();
+
+
+});
 
 
 // var text = snapshot.val()[0].msys.relay_message.content.text;
