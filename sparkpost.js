@@ -6,6 +6,8 @@ var bodyParser = require('body-parser');
 var SparkPost = require('sparkpost');
 var sparky = new SparkPost('174c6d51643ab96c495a68a70a2eb2b4c31561e3');
 var firebase = require("firebase");
+var chess = new require("./chess/chess.js");
+var tictac = new require("./tictac/tictac.js");
 
 var app = express();
 
@@ -46,6 +48,31 @@ firebase.initializeApp(config);
 //   });
 // }
 
+function createChessGame(player1, player2){
+  var board = chess.startGame();
+  firebase.database().ref('games').set({
+    user1: player1,
+    user2: player2,
+    game: board
+  });
+  sendEmail(player1,'<p>Welcome to Chess, Make your first move! </p>' + board.writeBoard());
+}
+
+//createChessGame('kevinscottburns@gmail.com', 'zeidersjack@gmail.com')
+
+
+function createtictactoe(player1, player2) {
+  var board = tictac.startGame();
+  firebase.database().ref('games').set({
+    user1: player1,
+    user2: player2,
+    game: board
+  });
+  sendEmail(player1,'<p>Welcome to TicTacToe, Make your first move! </p>' + board.writeBoard());
+}
+
+createtictactoe('kevinscottburns@gmail.com', 'zeidersjack@gmail.com')
+
 
 //writeUserData('Kevin', 'Bacon'); //player1, player2
 
@@ -59,14 +86,14 @@ firebase.initializeApp(config);
 // }
 
 
-function sendEmail(text){
+function sendEmail(user, text){
   console.log("Sending email...");
   sparky.transmissions.send({
   transmissionBody: {
     content: {
-      from: 'testing@sparkpostbox.com',
-      subject: 'Oh hey!',
-      html:'<html><body><p>' + text + '</p></body></html>'
+      from: user,
+      subject: 'Game :)',
+      html:'<html><body>' + text + '</body></html>'
     },
     recipients: [
       {address: 'kevinscottburns@gmail.com'}
