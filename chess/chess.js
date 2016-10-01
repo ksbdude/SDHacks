@@ -7,7 +7,7 @@ module.exports = {
 
 	handleInput: function(sentence, boardState) {
     if (NLP.isStart(sentence))
-			return playGame;
+			return this.startGame();
 		if (NLP.isMove(sentence)) {
       var playGame = this.startGame();
       playGame.boardState = boardState;
@@ -39,7 +39,7 @@ module.exports = {
 			}
 		}
 	},
-	verifyMove: function(move, game) {
+	verifyMove: function(move, board) {
 		if ((move.hasOwnProperty("from") && move.hasOwnProperty("to"))) {
 			// var moves = game.boardState.ranks[move.start.rank].squares[move.start.file])
 			return true;
@@ -48,7 +48,6 @@ module.exports = {
 	},
 	startGame: function() {
 		var game =  chess.classic.engine();
-    console.log(game);
 		return game;
 	},
 	parseMove: function(command) {
@@ -64,7 +63,9 @@ module.exports = {
 		}
 		return move;
 	},
-	writeBoard: function(game) {
+	writeBoard: function(board) {
+    var playGame = this.startGame();
+    startGame.board = board;
 		var chars = game.toString().split('');
 		// for (var i = 0; i < chars.length; i++) {
 		// 	if ((/[a-z]/).test(chars[i])) {
