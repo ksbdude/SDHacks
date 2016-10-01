@@ -68,14 +68,14 @@ module.exports = {
 		var boardString = game.bd.map(function(tile) {
 			if (tile == "X" || tile == "O")
 				return tile;
-			return " ";
+			return "  ";
 		})
 		console.log(boardString);
 		boardString[1] = "|" + boardString[1] + '|'
 		boardString[4] = "|" + boardString[4] + '|'
 		boardString[7] = "|" + boardString[7] + '|'
-		boardString[2] = boardString[2] + "</br>-----</br>"
-		boardString[5] = boardString[5] + "</br>-----</br>"
+		boardString[2] = boardString[2] + "<br>-----<br>"
+		boardString[5] = boardString[5] + "<br>-----<br>"
 		boardString.unshift('<font face="courier">');
 		boardString.push("</font>");
 		return boardString.toString().replace(/,/g, '');

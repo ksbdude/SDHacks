@@ -33,20 +33,6 @@ firebase.initializeApp(config);
 //   //sendEmail(snapshot.val);
 // });
 
-// function writeUserData(player1, player2) {
-//   firebase.database().ref('users/').set({
-//     user1: player1,
-//     user2: player2
-// });
-// }
-
-// function addGameNum(){
-//   var getUserValue = firebase.database().ref('gamenum');
-//   getUserValue.on('value', function(snapshot) {
-//   console.log(snapshot.val);
-//   firebase.database.ref('gamenum').set(snapshot.val + 1);
-//   });
-// }
 
 function createChessGame(player1, player2){
   var board = chess.startGame();
@@ -91,7 +77,7 @@ function sendEmail(user, text){
   sparky.transmissions.send({
   transmissionBody: {
     content: {
-      from: user,
+      from: 'gamecenter@kevinsburns.com',
       subject: 'Game :)',
       html:'<html><body>' + text + '</body></html>'
     },
@@ -109,18 +95,9 @@ function sendEmail(user, text){
 });
 }
 
-
-var processRelayMessage = function(data) {
-  console.log('Email received from: ', data.msg_from);
-};
-
-app.post('/incoming', function(req, res) {
-  res.sendStatus(200);
-  var batch = req.body;
-  for(var i=0; i<batch.length; i++) {
-    //processRelayMessage(batch[i].msys.relay_message);
-    console.log('Got a MSG!!!');
-  }
+var data = firebase.database().ref('raw_inbound/-KT0fhU_S92d3674yDDz/');
+data.on('child_added', function(data) {
+  console.log('Looook here --->   ' + data.val + '   ' + data.key);
 });
 
 // app.listen(app.get('port'), function(){
