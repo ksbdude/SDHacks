@@ -84,10 +84,6 @@ module.exports = {
 			row = row + "</tr>"
 			board = board + row;
 		}
-		// return chars
-		// chars = chars.filter(function(u) {
-		// 	return (/[a-z]/).test(u) || (/[A-Z]/).test(u) || u == "_" || u == "|";
-		// })
 		var ranks = playGame.boardState.ranks;
 		for (var i = 1; i < 9; i++) {
 			for (var j = 1; j < 9; j++) {

@@ -23,11 +23,13 @@ app.post("/moves", function(req, res) {
 })
 // var game = ticTac.startGame;
 app.post("/tic", function(req, res) {
+  var ticGame = ticTac.startGame();
 	var sent = req.body.sent;
-  var data = ticTac.turn(sent,game);
-  game = data.game
+  var data = ticTac.turn(sent,ticGame);
+
+  game = data.game;
   // res.send(data.game.boardState)
-  // res.send(ticTac.printBoard(game));
+  res.send(ticTac.printBoard(ticGame));
 	});
 app.listen(3000, function() {
 	console.log("started server")
