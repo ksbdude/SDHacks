@@ -15,15 +15,15 @@ app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.json());
 
 app.get('/', function(req, res) {
-  res.send('Hello World');
+	res.send('Hello World');
 });
 
 var config = {
-    apiKey: "AIzaSyD6Xsy4rDSHLL1x6tYSjwlnky6mGz0WZGk",
-    authDomain: "emailgamer-be1d5.firebaseapp.com",
-    databaseURL: "https://emailgamer-be1d5.firebaseio.com",
-    storageBucket: "emailgamer-be1d5.appspot.com",
-    messagingSenderId: "845155021781"
+	apiKey: "AIzaSyD6Xsy4rDSHLL1x6tYSjwlnky6mGz0WZGk",
+	authDomain: "emailgamer-be1d5.firebaseapp.com",
+	databaseURL: "https://emailgamer-be1d5.firebaseio.com",
+	storageBucket: "emailgamer-be1d5.appspot.com",
+	messagingSenderId: "845155021781"
 };
 firebase.initializeApp(config);
 
@@ -34,33 +34,33 @@ firebase.initializeApp(config);
 // });
 
 
-function createChessGame(player1, player2){
-  var board = chess.startGame();
-  firebase.database().ref('games').set({
-    user1: player1,
-    user2: player2,
-    game: board
-  });
-  sendEmail(player1,'<p>Welcome to Chess, Make your first move! </p>' + board.writeBoard());
+function createChessGame(player1, player2) {
+	var board = chess.startGame();
+	firebase.database().ref('games').set({
+		user1: player1,
+		user2: player2,
+		game: board
+	});
+	sendEmail(player1, '<p>Welcome to Chess, Make your first move! </p>' + board.writeBoard());
 }
 
 //createChessGame('kevinscottburns@gmail.com', 'zeidersjack@gmail.com')
 
 
 function createtictactoe(player1, player2) {
-  var board = tictac.startGame();
-  firebase.database().ref('games').set({
-    user1: player1,
-    user2: player2,
-    game: board
-  });
-  sendEmail(player1,'<p>Welcome to TicTacToe, Make your first move! </p>' + tictac.printBoard(board));
+	var board = tictac.startGame();
+	firebase.database().ref('games').set({
+		user1: player1,
+		user2: player2,
+		game: board
+	});
+	sendEmail(player1, '<p>Welcome to TicTacToe, Make your first move! </p>' + tictac.printBoard(board));
 }
 
 createtictactoe('kevinscottburns@gmail.com', 'zeidersjack@gmail.com')
 
 
-//writeUserData('Kevin', 'Bacon'); //player1, player2
+// writeUserData('Kevin', 'Bacon'); //player1, player2
 
 // var userData = firebase.database().ref('users/user1');
 // userData.on('value', function(snapshot) {
@@ -72,53 +72,58 @@ createtictactoe('kevinscottburns@gmail.com', 'zeidersjack@gmail.com')
 // }
 
 
-function sendEmail(user, text){
-  console.log("Sending email with text: " + text);
-  sparky.transmissions.send({
-  transmissionBody: {
-    content: {
-      from: 'yo@yo.quibblemail.com',
-      subject: 'Game :)',
-      html:'<html><body>' + text + '</body></html>'
-    },
-    recipients: [
-      {address: 'kevinscottburns@gmail.com'}
-    ]
-  }
-}, function(err, res) {
-  if (err) {
-    console.log('ERROR IT DIDNT WORK :(');
-    console.log(err);
-  } else {
-    console.log('Email Sent!!! :)');
-  }
-});
+function sendEmail(user, text) {
+	var userRef = firebase.database().ref('users');
+	userRef.once('value', function(users) {
+		if (users.child(user.split('.')[0]).exists() === false)
+			users.push(user);
+	});
+	console.log("Sending email with text: " + text);
+	sparky.transmissions.send({
+		transmissionBody: {
+			content: {
+				from: 'yo@yo.quibblemail.com',
+				subject: 'Game :)',
+				html: '<html><body>' + text + '</body></html>'
+			},
+			recipients: [{
+				address: 'kevinscottburns@gmail.com'
+			}]
+		}
+	}, function(err, res) {
+		if (err) {
+			console.log('ERROR IT DIDNT WORK :(');
+			console.log(err);
+		} else {
+			console.log('Email Sent!!! :)');
+		}
+	});
 }
 
-var data = firebase.database().ref('raw-inbound');
-  data.on('child_added', function(snapshot) {
-    console.log(snapshot.val()[0].msys.relay_message.content.text)
-    firebase.database().set(snapshot.val()[0], "");
+// var data = firebase.database().ref('raw-inbound');
+//   data.on('child_added', function(snapshot) {
+//     console.log(snapshot.val()[0].msys.relay_message.content.text)
+//     firebase.database().set(snapshot.val()[0], "");
+//
+//
+// //    firebase.database().ref('raw-inbound').orderByValuse();
+//
+//
+// });
 
 
-//    firebase.database().ref('raw-inbound').orderByValuse();
+// var text = snapshot.val()[0].msys.relay_message.content.text;
+// console.log("Got an email!   ", text);
+// if(text.search('start game') != -1){
+//   console.log('creating game');
+// }
 
-  
-});
-  
-
-  // var text = snapshot.val()[0].msys.relay_message.content.text;
-  // console.log("Got an email!   ", text);
-  // if(text.search('start game') != -1){
-  //   console.log('creating game');
-  // }
-
-  //this.firebase.child('raw-events').child(snapshot.key()).remove();
+//this.firebase.child('raw-events').child(snapshot.key()).remove();
 
 // app.listen(app.get('port'), function(){
 //   console.log('Express server listening on port ' + app.get('port'));
 // });
 
-app.listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
+app.listen(app.get('port'), function() {
+	console.log('Express server listening on port ' + app.get('port'));
 });
