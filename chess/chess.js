@@ -1,43 +1,45 @@
-var SparkPost = require('sparkpost');
-var sp = new SparkPost('<YOUR API KEY>');
 var chess = require("node-chess");
-var NLP = require("./chessNLP.js")
-
+var NLP = require("./chessNLP.js");
+var watson = require("../watson.js");
 module.exports = {
-
 	handleInput: function(sentence, boardState) {
-		if (NLP.isStart(sentence))
-			return this.startGame();
-		if (NLP.isMove(sentence)) {
-			var playGame = this.startGame();
-			playGame.boardState = boardState;
-			var command = NLP.parseMove(sentence);
-			move = this.parseMove(command);
-			if (this.verifyMove(move)) {
-				var result = playGame.movePiece(move);
-				var winner = 0;
-				if (playGame.boardState.winnerIsWhite === false)
-					winner = 1;
-				if (playGame.boardState.winnerIsWhite === true)
-					winner = 2;
-				if (playGame.boardState.gameIsDrawn)
-					winner = 3;
-				return {
-					board: playGame.boardState,
-					validMove: result === null ? false : true,
-					winner: winner,
-					boardString: this.writeBoard(playGame.boardState)
+    var that = this;
+    return watson.parsingTranslate(sentence).then(function(trans) {
+			sentence = trans;
+			if (NLP.isStart(sentence)){
+				var board = that.startGame();
+        return board;
+      }
+			if (NLP.isMove(sentence)) {
+				var playGame = that.startGame();
+				playGame.boardState = boardState;
+				var command = NLP.parseMove(sentence);
+				move = that.parseMove(command);
+				if (that.verifyMove(move)) {
+					var result = playGame.movePiece(move);
+					var winner = 0;
+					if (playGame.boardState.winnerIsWhite === false)
+						winner = 1;
+					if (playGame.boardState.winnerIsWhite === true)
+						winner = 2;
+					if (playGame.boardState.gameIsDrawn)
+						winner = 3;
+					return {
+						board: playGame.boardState,
+						validMove: result === null ? false : true,
+						winner: winner,
+						boardString: that.writeBoard(playGame.boardState)
+					}
+				} else {
+					return {
+						board: playGame.deepCopy(),
+						validMove: false,
+						winner: 0,
+						boardString: that.writeBoard(playGame.boardState)
+					};
 				}
-
-			} else {
-				return {
-					board: playGame.deepCopy(),
-					validMove: false,
-					winner: 0,
-					boardString: this.writeBoard(playGame.boardState)
-				};
 			}
-		}
+		});
 	},
 	verifyMove: function(move, board) {
 		if ((move.hasOwnProperty("from") && move.hasOwnProperty("to"))) {
@@ -63,25 +65,20 @@ module.exports = {
 		}
 		return move;
 	},
-	writeBoard: function(board) {
+	writeBoard: function(boardState) {
 		var playGame = this.startGame();
-		playGame.boardState = board;
-		// for (var i = 0; i < chars.length; i++) {
-		// 	if ((/[a-z]/).test(chars[i])) {
-		// 		chars[i] = "<b>" + chars[i] + "</b>"
-		// 	}
-		// }
+		playGame.boardState = boardState;
 		var board = '<table style="text-align:center;border-spacing:0pt;font-family:"Arial Unicode MS"; border-collapse:collapse; border-color: silver; border-style: solid; border-width: 0pt 0pt 0pt 0pt">';
 		for (var i = 0; i < 8; i++) {
 			var row = "<tr style='vertical-align:bottom;'><td style='vertical-align:middle;width:12pt'>" + (8 - i).toString() + "</td>"
 			for (var j = 0; j < 8; j++) {
 				if (((j % 2) + (i % 2)) % 2 == 1) {
-					row = row + '<td style="width:40pt; height:40pt; border-collapse:collapse; border-color: silver; border-style: solid; border-width: 1pt 0pt 0pt 1pt"><span style="font-size:250%;">?' + (8 * i + j).toString() + '?</span></td>'
+					row = row + '<td style="width:40pt; height:40pt; border-collapse:collapse; border-color: silver; border-style: solid; border-width: 1pt 0pt 0pt 1pt"><span style="font-size:250%;">?' + (8 * i + j).toString() + '?</span></td>';
 				} else {
-					row = row + '<td style="background:silver;"><span style="font-size:250%;">?' + (8 * i + j).toString() + '?</span></td>'
+					row = row + '<td style="background:silver;"><span style="font-size:250%;">?' + (8 * i + j).toString() + '?</span></td>';
 				}
 			}
-			row = row + "</tr>"
+			row = row + "</tr>";
 			board = board + row;
 		}
 		var ranks = playGame.boardState.ranks;
@@ -132,27 +129,7 @@ module.exports = {
 
 			}
 		}
-		board = board + "</table>"
-			// chars[chars.lastIndexOf('1')] = 'a';
-			// chars[chars.lastIndexOf('2')] = 'b';
-			// chars[chars.lastIndexOf('3')] = 'c';
-			// chars[chars.lastIndexOf('4')] = 'd';
-			// chars[chars.lastIndexOf('5')] = 'e';
-			// chars[chars.lastIndexOf('6')] = 'f';
-			// chars[chars.lastIndexOf('7')] = 'g';
-			// chars[chars.lastIndexOf('8')] = 'h';
-			// chars[chars.indexOf('1') - 2] = "|<br>";
-			// chars[chars.indexOf('2') - 2] = "|<br>";
-			// chars[chars.indexOf('3') - 2] = "|<br>";
-			// chars[chars.indexOf('4') - 2] = "|<br>";
-			// chars[chars.indexOf('5') - 2] = "|<br>";
-			// chars[chars.indexOf('6') - 2] = "|<br>";
-			// chars[chars.indexOf('7') - 2] = "|<br>";
-			// chars[chars.indexOf('8') - 2] = "|<br>";
-			// chars[chars.indexOf('-') - 2] = "|<br>";
-			// chars.unshift('<font face="courier">');
-			// chars.push("|</font>");
+		board = board + "</table>";
 		return board;
-		// return chars.toString().replace(/,/g, '');
 	}
 };

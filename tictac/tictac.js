@@ -3,15 +3,23 @@ var startGame = {
 	bd: [9, 8, 7, 6, 5, 3, 4, 5, 6],
 	currentTurn: "X"
 };
+var watson = require("../watson.js");
+
 module.exports = {
 	turn: function(sentence, game) {
-		var result = this.placePiece(game.currentTurn, NLP.parseSentence(sentence), game);
-		var win = this.checkWin(result.game);
-		return {
-			valid: result.success,
-			winner: win,
-			game: result.game
-		}
+		var that = this;
+		return watson.parsingTranslate(sentence).then(function(trans) {
+			sentence = trans;
+			var result = that.placePiece(game.currentTurn, NLP.parseSentence(sentence), game);
+			var win = that.checkWin(result.game);
+			return {
+				valid: result.success,
+				winner: win,
+				game: result.game
+			};
+		}).catch(function(err) {
+			return err;
+		});
 	},
 	startGame: function() {
 		return startGame
@@ -46,18 +54,16 @@ module.exports = {
 		return null
 	},
 	placePiece: function(char, pos, game) {
-		console.log(char)
-		if (game.bd[pos] > 1) {
-			game.bd[pos] = char;
-			if (game.currentTurn == 'X')
-				game.currentTurn = 'O';
-			else if (game.currentTurn == 'O')
-				game.currentTurn = 'X';
-			return {
-				success: true,
-				game: game
-			};
-		}
+		game.bd[pos] = char;
+		if (game.currentTurn == 'X')
+			game.currentTurn = 'O';
+		else if (game.currentTurn == 'O')
+			game.currentTurn = 'X';
+		return {
+			success: true,
+			game: game
+		};
+
 		return {
 			success: false,
 			game: game

@@ -4,11 +4,14 @@ var startWords = [
 var moveWords = [
 	"move", "piece", "from", "to"
 ];
+
+
 var letToNum = function(letter) {
 	return parseInt(letter, 36) - 9;
 };
 module.exports = {
 	isStart: function(sentence) {
+
 		var starter = false;
 		sentence = sentence.toLowerCase();
 		for (var i = 0; i < startWords.length; i++) {
