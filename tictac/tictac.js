@@ -69,17 +69,6 @@ module.exports = {
 				return tile;
 			return "  ";
 		})
-<<<<<<< HEAD
-		console.log(boardString);
-		boardString[1] = "|" + boardString[1] + '|'
-		boardString[4] = "|" + boardString[4] + '|'
-		boardString[7] = "|" + boardString[7] + '|'
-		boardString[2] = boardString[2] + "<br>-----<br>"
-		boardString[5] = boardString[5] + "<br>-----<br>"
-		boardString.unshift('<font face="courier">');
-		boardString.push("</font>");
-		return boardString.toString().replace(/,/g, '');
-=======
 		var board = '<table style="text-align:center;border-spacing:0pt;font-family:"Arial Unicode MS"; border-collapse:collapse; border-color: silver; border-style: solid; border-width: 0pt 0pt 0pt 0pt">';
 		for (var i = 0; i < 3; i++) {
 			var row = "<tr style='vertical-align:bottom;'>"
@@ -99,6 +88,5 @@ module.exports = {
 			}
 		}
 		return board;
->>>>>>> b70075f49fa0f5cc6bdffed4d87a2e5ff624f01c
 	}
 };
