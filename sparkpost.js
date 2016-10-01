@@ -77,7 +77,7 @@ function sendEmail(user, text){
   sparky.transmissions.send({
   transmissionBody: {
     content: {
-      from: 'gamecenter@kevinsburns.com',
+      from: 'yo@yo.quibblemail.com',
       subject: 'Game :)',
       html:'<html><body>' + text + '</body></html>'
     },
@@ -95,10 +95,25 @@ function sendEmail(user, text){
 });
 }
 
-var data = firebase.database().ref('raw_inbound/-KT0fhU_S92d3674yDDz/');
-data.on('child_added', function(data) {
-  console.log('Looook here --->   ' + data.val + '   ' + data.key);
+var data = firebase.database().ref('raw-inbound');
+  data.on('child_added', function(snapshot) {
+    console.log(snapshot.val()[0].msys.relay_message.content.text)
+    firebase.database().set(snapshot.val()[0], "");
+
+
+//    firebase.database().ref('raw-inbound').orderByValuse();
+
+  
 });
+  
+
+  // var text = snapshot.val()[0].msys.relay_message.content.text;
+  // console.log("Got an email!   ", text);
+  // if(text.search('start game') != -1){
+  //   console.log('creating game');
+  // }
+
+  //this.firebase.child('raw-events').child(snapshot.key()).remove();
 
 // app.listen(app.get('port'), function(){
 //   console.log('Express server listening on port ' + app.get('port'));
