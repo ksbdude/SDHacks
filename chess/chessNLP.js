@@ -6,7 +6,7 @@ var moveWords = [
 ];
 var letToNum = function(letter) {
 	return parseInt(letter, 36) - 9;
-}
+};
 module.exports = {
 	isStart: function(sentence) {
 		var starter = false;
@@ -27,7 +27,7 @@ module.exports = {
 			}
 			return false;
 		});
-		if (emails.length == 0)
+		if (emails.length === 0)
 			return null;
 		return emails[0];
 	},
