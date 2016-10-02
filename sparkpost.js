@@ -59,14 +59,13 @@ app.get("/chess", function(req, res) {
 })
 
 function createChessGame(player1, player2) {
-	var board = JSON.stringify(chess.startGame());
 	firebase.database().ref('games').push({
 		user1: player1,
 		user2: player2,
-		game: board,
+		history: [],
 		type: "chess"
 	});
-	sendEmail(player1, '<p>Welcome to Chess, Make your first move! </p>' + chess.writeBoard(JSON.parse(board)));
+	sendEmail(player1, '<p>Welcome to Chess, Make your first move! </p>' + chess.writeBoard([]));
 }
 
 //createChessGame('kevinscottburns@gmail.com', 'zeidersjack@gmail.com')
@@ -76,7 +75,7 @@ function createtictactoe(player1, player2) {
 	var board = tictac.startGame();
 	firebase.database().ref('games').push({
 		game: {
-			history: histroy,
+			board: board,
 			user1: player1,
 			user2: player2,
 			type: "ticTac"
@@ -101,12 +100,12 @@ function createtictactoe(player1, player2) {
 
 function sendEmail(user, text) {
 	var userRef = firebase.database().ref('users');
-	var up = false
+	var up = false;
 	userRef.once('value', function(users) {
 		users.forEach(function(subuser) {
 			if (subuser.val() == user)
 				up = true;
-		})
+		});
 		if (up == false) {
 			userRef.push(user)
 		}
@@ -159,7 +158,7 @@ function router(text, user) {
 								var html = tictac.printBoard(res.game);
 								if (res.winner != null) {
 									html = "<p> You lose <p>" + html;
-									sendEmail(game.val().game.user1 == user ? game.val().game.user1 : game.val().game.user2, "<b> Congrats you won your game against" + game.val().game.user2 + "</b>");
+									sendEmail(game.val().game.user1 == user ? game.val().game.user1 : game.val().game.user2, "<b> Congrats you won your game against " + game.val().game.user2 + "</b>");
 								}
 								sendEmail(game.val().game.user1 == user ? game.val().game.user2 : game.val().game.user1, html);
 							});
@@ -194,12 +193,18 @@ function router(text, user) {
 	}
 }
 firebase.database().ref('games').orderByChild("type").equalTo("chess").once("value").then(function(games) {
-  var user = "zeidersjack@gmail.com"
-  var text = "d2 to d3"
   games.forEach(function(game) {
+    var user = "zeidersjack@gmail.com"
+    var text = "d2 to d3"
+    console.log(game.val());
     if (game.val().user1 == user || game.val().user2 == user) {
       console.log("stuff");
-      chess.handleInput(text, JSON.parse(game.val().history)).then(function(res) {
+      var history = game.val().history
+      if(history === null){
+        history = [];
+      }
+      return truel
+      chess.handleInput(text, history).then(function(res) {
         console.log("moreStuffs");
         var data = res;
         firebase.database().ref('games').child(game.key).child("game").update(JSON.stringify(data.board), function(err) {
@@ -227,7 +232,27 @@ data.on('child_added', function(snapshot) {
 	})
 	data.remove();
 });
-
+firebase.database().ref('games').orderByChild("type").equalTo("chess").once("value").then(function(games) {
+  var text = 'd2 to d3';
+  var user = "zeidersjack@gmail.com"
+  games.forEach(function(game) {
+    if (game.val().user1 == user || game.val().user2 == user) {
+      console.log("stuff");
+      chess.handleInput(text, game.val().history).then(function(res) {
+        console.log("moreStuffs");
+        var data = res;
+        firebase.database().ref('games').child(game.key).child("game").update(JSON.stringify(data.board), function(err) {
+          console.log("we suttfing");
+          if (data.winner !== 0) {
+            sendEmail(game.val().game.user1 == user ? game.val().game.user1 : game.val().game.user2, "<b> Congrats you won your game against" + game.val().game.user2 + "</b>");
+            data.boardString = "<p> You LOST </p>" + data.boardString
+          }
+          sendEmail(game.val().game.user1 == user ? game.val().game.user2 : game.val().game.user1, data.boardString);
+        });
+      });
+    }
+  });
+})
 
 // var text = snapshot.val()[0].msys.relay_message.content.text;
 // console.log("Got an email!   ", text);

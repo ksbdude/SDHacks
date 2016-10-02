@@ -19,7 +19,7 @@ module.exports = {
 		if (addresses.length > 0)
 			data.person = addresses[0].replace(/\s+/, "");
 		for (var i = 0; i < words.length; i++) {
-			if (words[i].search('tic') + words[i].search('tac') + words[i].search('toe') > -2)
+			if (words[i].search('tic') + words[i].search('tac') + words[i].search('toe') > -3)
 				data.game = "ticTacToe";
 			if (words[i] == 'chess') {
 				data.game = "chess";

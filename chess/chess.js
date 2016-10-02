@@ -3,38 +3,39 @@ var NLP = require("./chessNLP.js");
 var watson = require("../watson.js");
 module.exports = {
 	handleInput: function(sentence, history) {
-    this.game = this.simGame(history)
-    var that = this;
-    return watson.parsingTranslate(sentence).then(function(trans) {
+		console.log("I hate life");
+		if (history === null)
+			history = [];
+		var that = this;
+		var game = this.simGame(history);
+		console.log("wtf")
+		return watson.parsingTranslate(sentence).then(function(trans) {
 			sentence = trans;
-			if (NLP.isStart(sentence)){
-				board = that.startGame();
-        return board;
-      }
+			console.log("fire")
 			if (NLP.isMove(sentence)) {
 				var command = NLP.parseMove(sentence);
 				move = that.parseMove(command);
 				if (that.verifyMove(move)) {
-					that.board.movePiece(move);
+					that.game.movePiece(move);
 					var winner = 0;
-					if (that.board.boardState.winnerIsWhite === false)
+					if (that.game.boardState.winnerIsWhite === false)
 						winner = 1;
-					if (that.board.boardState.winnerIsWhite === true)
+					if (that.game.boardState.winnerIsWhite === true)
 						winner = 2;
-					if (that.board.boardState.gameIsDrawn)
+					if (that.game.boardState.gameIsDrawn)
 						winner = 3;
 					return {
-						board: that.board,
+						history: that.game.boardState.moveHistory,
 						validMove: result === null ? false : true,
 						winner: winner,
-						boardString: that.writeBoard(board)
+						boardString: that.writeBoard(that.game.boardState.moveHistory)
 					};
 				} else {
 					return {
 						history: that.game.boardState.moveHistory,
 						validMove: false,
 						winner: 0,
-						boardString: that.writeBoard(board)
+						boardString: that.writeBoard(that.game.boardState.moveHistory)
 					};
 				}
 			}
@@ -51,13 +52,14 @@ module.exports = {
 		var game = chess.classic.engine();
 		return game;
 	},
-  simGame: function(history) {
-    var game = this.startGame();
-    for(var i =0; i < history.length;i++){
-      game.movePiece(history[i]);
-    }
-    return game;
-  },
+	simGame: function(history) {
+		console.log("?")
+		var game = chess.classic.engine();
+		for (var i = 0; i < history.length; i++) {
+			game.movePiece(history[i]);
+		}
+		return game;
+	},
 	parseMove: function(command) {
 		var move = {
 			from: {
@@ -72,7 +74,7 @@ module.exports = {
 		return move;
 	},
 	writeBoard: function(history) {
-    var game = this.simGame(history);
+		var game = this.simGame(history);
 		var board = '<table style="text-align:center;border-spacing:0pt;font-family:"Arial Unicode MS"; border-collapse:collapse; border-color: silver; border-style: solid; border-width: 0pt 0pt 0pt 0pt">';
 		for (var i = 0; i < 8; i++) {
 			var row = "<tr style='vertical-align:bottom;'><td style='vertical-align:middle;width:12pt'>" + (8 - i).toString() + "</td>"
