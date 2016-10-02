@@ -223,6 +223,7 @@ firebase.database().ref('games').orderByChild("type").equalTo("chess").once("val
 
 var data = firebase.database().ref('raw-inbound');
 data.on('child_added', function(snapshot) {
+  console.log('recieved and processing email');
 	snapshot.forEach(function(item) {
 		console.log("ran")
 		var text = item.val().msys.relay_message.content.text;
