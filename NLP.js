@@ -1,22 +1,27 @@
-var startWords = ["start", "challenge", "being"]
+var startWords = ["start", "challenge", "begin", "play"];
+var ticTacWords = ["top", "upper", "bottom", "lower", "left", "center", "middle", "right"];
+var ticNLP = require('./tictac/tictacNLP.js');
+var chessNLP = require("./chess/chessNLP.js");
 module.exports = {
 	parseChallenge: function(email, sender) {
 		var data = {
 			game: null,
 			person: null
 		}
-		words = emails.split(/[ ,]+/);
-		var adresses = words.filter(function(word) {
-			if (word.search("@" != -1) && word != sender)
+		words = email.split(/[ ,]+/);
+		console.log(words)
+		var addresses = words.filter(function(word) {
+			if (word.search("@") != -1 && word != sender)
 				return true;
 			return false;
+			console.log(addresses)
 		});
 		if (addresses.length > 0)
-			data.person = adresses[0];
+			data.person = addresses[0].replace(/\s+/, "");
 		for (var i = 0; i < words.length; i++) {
-			if (words[i].search('tic') + words[i].search('tac') + word[i].search('toe') > -3)
+			if (words[i].search('tic') + words[i].search('tac') + words[i].search('toe') > -2)
 				data.game = "ticTacToe";
-			if (words[i] = 'chess') {
+			if (words[i] == 'chess') {
 				data.game = "chess";
 			}
 		}
@@ -31,5 +36,13 @@ module.exports = {
 			}
 		}
 		return false
+	},
+	isTicTac: function(email) {
+		if (ticNLP.parseSentence(email)) {
+			return ticNLP.parseSentence(email);
+		}
+	},
+	isChess: function(email) {
+		return chessNLP.isMove(email);
 	}
 };

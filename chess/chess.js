@@ -2,40 +2,39 @@ var chess = require("node-chess");
 var NLP = require("./chessNLP.js");
 var watson = require("../watson.js");
 module.exports = {
-	handleInput: function(sentence, boardState) {
+	handleInput: function(sentence, history) {
+    this.game = this.simGame(history)
     var that = this;
     return watson.parsingTranslate(sentence).then(function(trans) {
 			sentence = trans;
 			if (NLP.isStart(sentence)){
-				var board = that.startGame();
+				board = that.startGame();
         return board;
       }
 			if (NLP.isMove(sentence)) {
-				var playGame = that.startGame();
-				playGame.boardState = boardState;
 				var command = NLP.parseMove(sentence);
 				move = that.parseMove(command);
 				if (that.verifyMove(move)) {
-					var result = playGame.movePiece(move);
+					that.board.movePiece(move);
 					var winner = 0;
-					if (playGame.boardState.winnerIsWhite === false)
+					if (that.board.boardState.winnerIsWhite === false)
 						winner = 1;
-					if (playGame.boardState.winnerIsWhite === true)
+					if (that.board.boardState.winnerIsWhite === true)
 						winner = 2;
-					if (playGame.boardState.gameIsDrawn)
+					if (that.board.boardState.gameIsDrawn)
 						winner = 3;
 					return {
-						board: playGame.boardState,
+						board: that.board,
 						validMove: result === null ? false : true,
 						winner: winner,
-						boardString: that.writeBoard(playGame.boardState)
-					}
+						boardString: that.writeBoard(board)
+					};
 				} else {
 					return {
-						board: playGame.deepCopy(),
+						history: that.game.boardState.moveHistory,
 						validMove: false,
 						winner: 0,
-						boardString: that.writeBoard(playGame.boardState)
+						boardString: that.writeBoard(board)
 					};
 				}
 			}
@@ -52,6 +51,13 @@ module.exports = {
 		var game = chess.classic.engine();
 		return game;
 	},
+  simGame: function(history) {
+    var game = this.startGame();
+    for(var i =0; i < history.length;i++){
+      game.movePiece(history[i]);
+    }
+    return game;
+  },
 	parseMove: function(command) {
 		var move = {
 			from: {
@@ -65,9 +71,8 @@ module.exports = {
 		}
 		return move;
 	},
-	writeBoard: function(boardState) {
-		var playGame = this.startGame();
-		playGame.boardState = boardState;
+	writeBoard: function(history) {
+    var game = this.simGame(history);
 		var board = '<table style="text-align:center;border-spacing:0pt;font-family:"Arial Unicode MS"; border-collapse:collapse; border-color: silver; border-style: solid; border-width: 0pt 0pt 0pt 0pt">';
 		for (var i = 0; i < 8; i++) {
 			var row = "<tr style='vertical-align:bottom;'><td style='vertical-align:middle;width:12pt'>" + (8 - i).toString() + "</td>"
@@ -81,7 +86,7 @@ module.exports = {
 			row = row + "</tr>";
 			board = board + row;
 		}
-		var ranks = playGame.boardState.ranks;
+		var ranks = game.boardState.ranks;
 		for (var i = 1; i < 9; i++) {
 			for (var j = 1; j < 9; j++) {
 				var piece = ' ';
@@ -89,40 +94,40 @@ module.exports = {
 					piece = ranks[i].squares[j].piece.notation;
 				switch (piece) {
 					case "R":
-						piece = "&#9820";
+						piece = "&#9820;";
 						break;
 					case "N":
-						piece = "&#9822";
+						piece = "&#9822;";
 						break;
 					case "B":
-						piece = "&#9821";
+						piece = "&#9821;";
 						break;
 					case "Q":
-						piece = "&#9819";
+						piece = "&#9819;";
 						break;
 					case "K":
-						piece = "&#9818";
+						piece = "&#9818;";
 						break;
 					case "P":
-						piece = "&#9823";
+						piece = "&#9823;";
 						break;
 					case "r":
-						piece = "&#9814";
+						piece = "&#9814;";
 						break;
 					case "n":
-						piece = "&#9816";
+						piece = "&#9816;";
 						break;
 					case "b":
-						piece = "&#9815";
+						piece = "&#9815;";
 						break;
 					case "q":
-						piece = "&#9813";
+						piece = "&#9813;";
 						break;
 					case "k":
-						piece = "&#9812";
+						piece = "&#9812;";
 						break;
 					case "p":
-						piece = "&#9817";
+						piece = "&#9817;";
 						break;
 				}
 				board = board.replace("?" + (8 * (i - 1) + (j - 1)).toString() + "?", piece)

@@ -24,7 +24,7 @@ app.post("/tic", function(req, res) {
 	var ticGame = ticTac.startGame();
 	var sent = req.body.sent;
 	ticTac.turn(sent, ticGame).then(function(data){
-    tic = data.game;
+    ticGame = data.game;
     // res.send(data.game.boardState)
     res.send(ticTac.printBoard(ticGame));
   }).catch(function(err){

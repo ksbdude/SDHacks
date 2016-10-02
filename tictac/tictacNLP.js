@@ -5,17 +5,20 @@ var centerWords = ["center","middle"];
 var rightWords = ["right"];
 
 var sort = function(words, filter){
-  return words.filter(function(word){
-    for(var i =0; i < filter.length;i++)
-      if(word.search(filter[i])!=-1)
-        return true;
-    return false;
-  }).length;
+  var count = 0
+  for(var i = 0; i < Math.min(words.length,7);i++){
+    for(var j = 0; j <filter.length; j++){
+      if(words[i].search(filter[j])!=-1){
+        count++
+      }
+    }
+  }
+  return count;
 };
 module.exports = {
   parseSentence: function(sentence){
-    sentence = sentence.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
-    var words = sentence.split(/[ ,]+/);
+    sentence = sentence.replace(/[.,\\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase()
+    var words = sentence.split(/\s+$/);
     var counts = {
       top: sort(words, topWords),
       bottom: sort(words, bottomWords),
@@ -24,9 +27,7 @@ module.exports = {
       right: sort(words, rightWords)
     };
     var sum = counts.top + counts.bottom + counts.left + counts.center + counts.right;
-    if(sentence.search(/[1-9]/)!= -1)
-      return parseInt(sentence[sentence.search(/[1-9]/)])-1;
-    else if(sum > 2 || sum < 1)
+    if(sum > 2 || sum < 1)
       return null;
     else if(counts.top == 1 && counts.left == 1)
       return 0;
@@ -46,7 +47,8 @@ module.exports = {
       return 7;
     else if(counts.bottom == 1 && counts.right == 1)
       return 8;
-
+    else{
       return null;
+    }
   }
 };
