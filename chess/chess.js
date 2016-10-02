@@ -76,7 +76,7 @@ module.exports = {
 	writeBoard: function(history) {
 		var game = this.simGame(history);
 		var board = '<table style="text-align:center;border-spacing:0pt;font-family:"Arial Unicode MS"; border-collapse:collapse; border-color: silver; border-style: solid; border-width: 0pt 0pt 0pt 0pt">';
-		for (var i = 0; i < 8; i++) {
+		for (var i = 7; i > -1; i--) {
 			var row = "<tr style='vertical-align:bottom;'><td style='vertical-align:middle;width:12pt'>" + (8 - i).toString() + "</td>"
 			for (var j = 0; j < 8; j++) {
 				if (((j % 2) + (i % 2)) % 2 == 1) {
