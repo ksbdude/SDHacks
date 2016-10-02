@@ -105,13 +105,6 @@ var data = firebase.database().ref('raw-inbound');
     snapshot.forEach(function(item){
       console.log(item.val());
     })
-    // console.log(snapshot.val()[0].msys.relay_message.content.text)
-    // firebase.database().set(snapshot.val()[0], "");
-
-
-//    firebase.database().ref('raw-inbound').orderByValuse();
-
-
 });
 
 
@@ -130,3 +123,5 @@ var data = firebase.database().ref('raw-inbound');
 app.listen(app.get('port'), function() {
 	console.log('Express server listening on port ' + app.get('port'));
 });
+
+
