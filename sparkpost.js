@@ -100,7 +100,8 @@ function sendEmail(user, text) {
 	});
 }
 function router(text){
-  console.log(NLP.isItNew(text));
+  var isNew = NLP.isItNew(text));
+  var data = parseChallenge(text);
 }
 
 var data = firebase.database().ref('raw-inbound');
