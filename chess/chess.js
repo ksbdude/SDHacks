@@ -146,9 +146,9 @@ module.exports = {
 						break;
 				}
 				board = board.replace("?" + (8 * (i - 1) + (j - 1)).toString() + "?", piece)
-
-			}
+				}
 		}
+		board = board + "<tr> <td></td> <td>A</td>  <td>B</td>  <td>C</td>  <td>D</td>  <td>E</td>  <td>F</td>  <td>G</td>  <td>H</td></tr>"
 		board = board + "</table>";
 		return board;
 	}

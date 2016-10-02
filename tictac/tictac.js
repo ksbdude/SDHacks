@@ -8,10 +8,8 @@ var watson = require("../watson.js");
 module.exports = {
 	turn: function(sentence, game) {
 		var that = this;
-    console.log("Start")
 		return watson.parsingTranslate(sentence).then(function(trans) {
 			sentence = trans;
-      console.log(sentence)
 			var result = that.placePiece(game.currentTurn, NLP.parseSentence(sentence), game);
 			var win = that.checkWin(result.game);
 			return {
