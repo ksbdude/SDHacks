@@ -1,45 +1,63 @@
 var chess = require("node-chess");
 var NLP = require("./chessNLP.js");
 var watson = require("../watson.js");
+var simGame = function(history) {
+	console.log("?")
+	var game = chess.classic.engine();
+	if (history) {
+		for (var i = 0; i < history.length; i++) {
+			console.log(history[i] + "data")
+			game.movePiece(history[i]);
+		}
+	}
+	return game;
+}
 module.exports = {
 	handleInput: function(sentence, history) {
 		console.log("I hate life");
-		if (history === null)
+		if (history === 'a')
 			history = [];
 		var that = this;
-		var game = this.simGame(history);
 		console.log("wtf")
 		return watson.parsingTranslate(sentence).then(function(trans) {
+			var game = simGame(history);
 			sentence = trans;
 			console.log("fire")
 			if (NLP.isMove(sentence)) {
+        console.log("move" + sentence)
 				var command = NLP.parseMove(sentence);
 				move = that.parseMove(command);
+        console.log("stuffer")
 				if (that.verifyMove(move)) {
-					that.game.movePiece(move);
+          console.log("foot)")
+					game.movePiece(move);
+          console.log("post")
 					var winner = 0;
-					if (that.game.boardState.winnerIsWhite === false)
+					if (game.boardState.winnerIsWhite === false)
 						winner = 1;
-					if (that.game.boardState.winnerIsWhite === true)
+					if (game.boardState.winnerIsWhite === true)
 						winner = 2;
-					if (that.game.boardState.gameIsDrawn)
+					if (game.boardState.gameIsDrawn)
 						winner = 3;
+          console.log("more")
 					return {
-						history: that.game.boardState.moveHistory,
-						validMove: result === null ? false : true,
+						history: game.boardState.moveHistory,
+            validMove:true,
 						winner: winner,
-						boardString: that.writeBoard(that.game.boardState.moveHistory)
+						boardString: that.writeBoard(game.boardState.moveHistory)
 					};
 				} else {
 					return {
-						history: that.game.boardState.moveHistory,
+						history: game.boardState.moveHistory,
 						validMove: false,
 						winner: 0,
 						boardString: that.writeBoard(that.game.boardState.moveHistory)
 					};
 				}
 			}
-		});
+		}).catch(function(err){
+      return err;
+    });
 	},
 	verifyMove: function(move, board) {
 		if ((move.hasOwnProperty("from") && move.hasOwnProperty("to"))) {
@@ -53,12 +71,7 @@ module.exports = {
 		return game;
 	},
 	simGame: function(history) {
-		console.log("?")
-		var game = chess.classic.engine();
-		for (var i = 0; i < history.length; i++) {
-			game.movePiece(history[i]);
-		}
-		return game;
+		return simGame(history);
 	},
 	parseMove: function(command) {
 		var move = {
@@ -74,7 +87,7 @@ module.exports = {
 		return move;
 	},
 	writeBoard: function(history) {
-		var game = this.simGame(history);
+		var game = simGame(history);
 		var board = '<table style="text-align:center;border-spacing:0pt;font-family:"Arial Unicode MS"; border-collapse:collapse; border-color: silver; border-style: solid; border-width: 0pt 0pt 0pt 0pt">';
 		for (var i = 7; i > -1; i--) {
 			var row = "<tr style='vertical-align:bottom;'><td style='vertical-align:middle;width:12pt'>" + (8 - i).toString() + "</td>"

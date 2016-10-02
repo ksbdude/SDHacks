@@ -170,55 +170,39 @@ function router(text, user) {
 			})
 		}
 		if (NLP.isChess(text)) {
-			firebase.database().ref('games').orderByChild("type").equalTo("chess").once("value").then(function(games) {
-				games.forEach(function(game) {
-					if (game.val().user1 == user || game.val().user2 == user) {
-						console.log("stuff");
-						chess.handleInput(text, JSON.parse(game.val().game)).then(function(res) {
-							console.log("moreStuffs");
-							var data = res;
-							firebase.database().ref('games').child(game.key).child("game").update(JSON.stringify(data.board), function(err) {
-								console.log("we suttfing");
-								if (data.winner !== 0) {
-									sendEmail(game.val().game.user1 == user ? game.val().game.user1 : game.val().game.user2, "<b> Congrats you won your game against" + game.val().game.user2 + "</b>");
-									data.boardString = "<p> You LOST </p>" + data.boardString
-								}
-								sendEmail(game.val().game.user1 == user ? game.val().game.user2 : game.val().game.user1, data.boardString);
-							});
-						});
-					}
-				});
-			})
+      firebase.database().ref('games').orderByChild("type").equalTo("chess").once("value").then(function(games) {
+      	games.forEach(function(game) {
+      		if (game.val().user1 == user || game.val().user2 == user) {
+      			console.log("stuff");
+            var history = "[]"
+            if(game.val().hasOwnProperty('history'))
+              history = game.val().history;
+      			chess.handleInput(text, JSON.parse(history)).then(function(data) {
+      				console.log("moreStuffs " + game.key + data.history);
+      				firebase.database().ref('games').child(game.key).set({
+      					history: JSON.stringify(data.history),
+      					user1: game.val().user1,
+      					user2: game.val().user2,
+                type: "chess"
+      				}).then(function(res){
+                console.log(res)
+                if (data.winner !== 0) {
+        					sendEmail(game.val().user1 == user ? game.val().user1 : game.val().user2, "<b> Congrats you won your game against" + game.val().user2 + "</b>");
+        					data.boardString = "<p> You LOST </p>" + data.boardString
+        				}
+        				sendEmail(game.val().user1 == user ? game.val().user2 : game.val().user1, data.boardString);
+              }).catch(function(err){
+                console.log(err)
+              });
+
+      			});
+      		}
+      	});
+      });
 		}
 	}
 }
-firebase.database().ref('games').orderByChild("type").equalTo("chess").once("value").then(function(games) {
-  games.forEach(function(game) {
-    var user = "zeidersjack@gmail.com"
-    var text = "d2 to d3"
-    console.log(game.val());
-    if (game.val().user1 == user || game.val().user2 == user) {
-      console.log("stuff");
-      var history = game.val().history
-      if(history === null){
-        history = [];
-      }
-      return truel
-      chess.handleInput(text, history).then(function(res) {
-        console.log("moreStuffs");
-        var data = res;
-        firebase.database().ref('games').child(game.key).child("game").update(JSON.stringify(data.board), function(err) {
-          console.log("we suttfing");
-          if (data.winner !== 0) {
-            sendEmail(game.val().game.user1 == user ? game.val().game.user1 : game.val().game.user2, "<b> Congrats you won your game against" + game.val().game.user2 + "</b>");
-            data.boardString = "<p> You LOST </p>" + data.boardString
-          }
-          sendEmail(game.val().game.user1 == user ? game.val().game.user2 : game.val().game.user1, data.boardString);
-        });
-      });
-    }
-  });
-})
+
 
 
 var data = firebase.database().ref('raw-inbound');
@@ -233,27 +217,8 @@ data.on('child_added', function(snapshot) {
 	})
 	data.remove();
 });
-firebase.database().ref('games').orderByChild("type").equalTo("chess").once("value").then(function(games) {
-  var text = 'd2 to d3';
-  var user = "zeidersjack@gmail.com"
-  games.forEach(function(game) {
-    if (game.val().user1 == user || game.val().user2 == user) {
-      console.log("stuff");
-      chess.handleInput(text, game.val().history).then(function(res) {
-        console.log("moreStuffs");
-        var data = res;
-        firebase.database().ref('games').child(game.key).child("game").update(JSON.stringify(data.board), function(err) {
-          console.log("we suttfing");
-          if (data.winner !== 0) {
-            sendEmail(game.val().game.user1 == user ? game.val().game.user1 : game.val().game.user2, "<b> Congrats you won your game against" + game.val().game.user2 + "</b>");
-            data.boardString = "<p> You LOST </p>" + data.boardString
-          }
-          sendEmail(game.val().game.user1 == user ? game.val().game.user2 : game.val().game.user1, data.boardString);
-        });
-      });
-    }
-  });
-})
+
+
 
 // var text = snapshot.val()[0].msys.relay_message.content.text;
 // console.log("Got an email!   ", text);
