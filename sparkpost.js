@@ -8,7 +8,7 @@ var sparky = new SparkPost('174c6d51643ab96c495a68a70a2eb2b4c31561e3');
 var firebase = require("firebase");
 var chess = new require("./chess/chess.js");
 var tictac = new require("./tictac/tictac.js");
-
+var NLP = require("./NLP.js");
 var app = express();
 
 app.set('port', process.env.PORT || 3000);
@@ -99,11 +99,17 @@ function sendEmail(user, text) {
 		}
 	});
 }
+function router(text){
+  var isNew = NLP.isItNew(text));
+  var data = parseChallenge(text);
+}
 
 var data = firebase.database().ref('raw-inbound');
   data.on('child_added', function(snapshot) {
     snapshot.forEach(function(item){
-      console.log(item.val());
+      var html = item.val().msys.relay_message.content.html;
+      console.log(html)
+      router(html);
     })
 });
 
